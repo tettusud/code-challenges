@@ -1,11 +1,9 @@
 package com.cs.draw.patterns;
 
 
-import com.cs.draw.helper.ApplicationException;
-import com.cs.draw.helper.Input;
-
-import java.util.List;
-
+import com.cs.draw.constants.Input;
+import com.cs.draw.exception.ApplicationException;
+import com.cs.draw.processor.Context;
 
 /**
  * this class creates instance of Line pattern to draw on the canvas
@@ -14,53 +12,45 @@ import java.util.List;
  * horizontal or vertical lines are supported. Horizontal and vertical lines
  * will be drawn using the 'x' character.
  */
-@Input(
-        inputSize = 4,
-        types = {Input.Type.INT, Input.Type.INT, Input.Type.INT, Input.Type.INT},
-        msg = "Line creation input pattern : L x1<int>  y1<int> x2<int>  y2<int> [eg: L 5 6 5 10]"
-)
+@Input(size = 4, msg = "Line creation input pattern : L x1<int>  y1<int> x2<int>  y2<int> [eg: L 5 6 5 10]")
 public class Line extends Pattern {
 
     private static final String DRAW_CHAR = "x";
 
-    public Line(String[] params) {
-        super(params);
+
+
+    public Line(String... args) throws ApplicationException {
+        super(args);
+        this.x = new Integer[]{Integer.parseInt(args[0]), Integer.parseInt(args[2])};
+        this.y = new Integer[]{Integer.parseInt(args[1]), Integer.parseInt(args[3])};
     }
 
     @Override
-    public List<List<String>> build(List<List<String>> data) throws ApplicationException {
-        List<String> processingData = null;
-        if (y[0] == y[1]) {
-            processingData = data.get(y[0]);
-            for (int i = x[0]; i <= x[1]; i++) {
-                processingData.set(i, DRAW_CHAR);
-            }
-        } else if (x[0] == x[1]) {
-
-            for (int i = y[0]; i <= y[1]; i++) {
-                data.get(i).set(x[0], DRAW_CHAR);
-            }
-        }
-        return data;
-    }
-
-    @Override
-    public void processParams() {
-        this.x=new Integer[]{Integer.parseInt(params[0]),Integer.parseInt(params[2])};
-        this.y=new Integer[]{Integer.parseInt(params[1]),Integer.parseInt(params[3])};
-    }
-
-    /**
-     * Validate if input is proper or not
-     *
-     * @throws ApplicationException
-     */
-    @Override
-    public void validateParams(List<List<String>> data) throws ApplicationException {
-        super.validateParams(data);
+    public void validate(Context context) throws ApplicationException {
+        super.validateParams(context.getCtx());
         if (this.x[0] != this.x[1] && this.y[0] != y[1]) {
             throw new ApplicationException("Currently only vertical or horizontal lines is supported");
         }
     }
+
+    @Override
+    public void build(Context context) throws ApplicationException {
+
+
+        String[] processingData = null;
+
+        if (y[0] == y[1]) {
+            processingData = context.getCtx()[y[0]];
+            for (int i = x[0]; i <= x[1]; i++) {
+                processingData[i]= DRAW_CHAR;
+            }
+        } else if (x[0] == x[1]) {
+            for (int i = y[0]; i <= y[1]; i++) {
+                context.getCtx()[i][x[0]]= DRAW_CHAR;
+            }
+        }
+
+    }
+
 
 }

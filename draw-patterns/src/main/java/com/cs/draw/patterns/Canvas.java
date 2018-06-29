@@ -1,28 +1,14 @@
 package com.cs.draw.patterns;
 
 
-import com.cs.draw.helper.ApplicationException;
-import com.cs.draw.helper.Input;
+import com.cs.draw.constants.Input;
+import com.cs.draw.exception.ApplicationException;
+import com.cs.draw.processor.Context;
 
 import java.util.ArrayList;
-import java.util.List;
 
-/***
- * To draw canvas
- * Pattern to create canvas is,
- * C w h           Should create a new canvas of width w and height h.
- *
- *  construct a canvas data of  bXh
- *   so outer list is h in size
- *   inner list is b in size
- */
-
-@Input(
-        inputSize = 2,
-        types = {Input.Type.INT, Input.Type.INT},
-        msg = "Canvas creation input pattern : C width<int>  height<int> [eg: C 20 4 ]"
-)
-public class Canvas extends Pattern {
+@Input(size=2 , msg = "Canvas creation input pattern : C width<int>  height<int> [eg: C 20 4 ]")
+public class Canvas extends Pattern{
 
     private static final String HORIZONTAL_CHAR = "-";
     private static final String VERTICAL_CHAR = "|";
@@ -32,27 +18,29 @@ public class Canvas extends Pattern {
     private int h;
     private int w;
 
-    public Canvas(String[] params) {
-        super(params);
+    public Canvas(String... args) throws ApplicationException{
+        super(args);
+        //first param is length
+        this.w = Integer.parseInt(args[0]);
+        //second param is breadth
+        this.h = Integer.parseInt(args[1]);
     }
 
-    /**
-     * C w h           Should fill a new canvas of width w and height h.
-     *
-     * @param data
-     */
     @Override
-    public List<List<String>> build(List<List<String>> data) {
+    public void validate(Context context) throws ApplicationException {
+        if(h<0 || w<0)
+            throw new ApplicationException("Illegal Argument exception");
+    }
 
+
+    @Override
+    public void build(Context context)  {
         //number of rows,cols in real sense is two more than entered
         //enclosing ares is supposed to by wXh
         this.h += 2;
         this.w += 2;
 
-        //init row/height wise, along y axis
-        for (int i = 0; i < this.h; i++) {
-            data.add(new ArrayList<>(this.w));
-        }
+
         String fill = "";
         //iterate row wise
         for (int i = 0; i < this.h; i++) {
@@ -64,24 +52,16 @@ public class Canvas extends Pattern {
                 } else {
                     fill = " ";
                 }
-                data.get(i).add(fill);
+                context.getCtx()[i][j]=fill;
             }
         }
-        return data;
     }
 
-    @Override
-    public void processParams() {
-        //first param is length
-        this.w = Integer.parseInt(params[0]);
-        //second param is breadth
-        this.h = Integer.parseInt(params[1]);
+    public int getH() {
+        return h;
     }
 
-    @Override
-    public void validateParams(List<List<String>> data)  {
-        //nothing to validate
+    public int getW() {
+        return w;
     }
-
-
 }

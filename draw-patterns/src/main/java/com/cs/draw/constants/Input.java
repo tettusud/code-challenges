@@ -1,4 +1,4 @@
-package com.cs.draw.helper;
+package com.cs.draw.constants;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,24 +18,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE) //on class level
 public @interface Input {
+
+
     /**
      * number of inputs for a particular shape
      *
      * @return
      */
-    public int inputSize();
-
-    /**
-     * type of input for a specific pattern whether int or string
-     *
-     * @return
-     */
-    public Type[] types();
-
-
-    public enum Type {
-        INT, STRING
-    }
+    public int size();
 
     /**
      * Hint message to show when user enters wrong/invalid arguments
@@ -43,4 +33,5 @@ public @interface Input {
      * @return
      */
     public String msg();
+
 }

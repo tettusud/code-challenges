@@ -1,23 +1,36 @@
 package com.cs.draw.patterns;
 
-import com.cs.draw.InputBuilderService;
-import com.cs.draw.helper.ApplicationException;
+import com.cs.draw.exception.ApplicationException;
+import com.cs.draw.processor.Context;
 
-import java.util.List;
+public abstract class Pattern {
 
-/***
- * This class must be extended by all the Pattern specific classes.
- * This class validates and handles some common task for processing the Pattern objects
- */
-public abstract class Pattern implements InputBuilderService {
 
-    Integer[] x, y;
+    private String[] args;
 
-    //all the inputs for drawing a particular pattern
-    protected String[] params;
+    protected Integer[] x, y;
 
-    public Pattern(String[] params) {
-        this.params = params;
+    public Pattern(String... args)  throws ApplicationException{
+        this.args=args;
+
+    }
+
+
+    public abstract void validate(Context context)  throws ApplicationException;
+
+    /**
+     *
+     */
+    public abstract void build(Context context) throws ApplicationException;
+
+
+    /**
+     * @param data
+     * @param point
+     * @throws ApplicationException
+     */
+    protected void validateX(String[][] data, Integer... point) throws ApplicationException {
+        validateCoordinates(data[0].length, point);
     }
 
     /**
@@ -25,17 +38,8 @@ public abstract class Pattern implements InputBuilderService {
      * @param point
      * @throws ApplicationException
      */
-    protected void validateX(List<List<String>> data, Integer... point) throws ApplicationException {
-        validateCoordinates(data.get(0).size(), point);
-    }
-
-    /**
-     * @param data
-     * @param point
-     * @throws ApplicationException
-     */
-    protected void validateY(List<List<String>> data, Integer... point) throws ApplicationException {
-        validateCoordinates(data.size(), point);
+    protected void validateY(String[][] data, Integer... point) throws ApplicationException {
+        validateCoordinates(data.length, point);
     }
 
     /**
@@ -54,13 +58,16 @@ public abstract class Pattern implements InputBuilderService {
     }
 
 
-    @Override
-    public void validateParams(List<List<String>> data) throws ApplicationException {
+    protected void validateParams(String[][] data) throws ApplicationException {
         validateX(data,x);
         validateY(data,y);
     }
 
-    public String[] getParams() {
-        return params;
+
+    public String[] getArgs() {
+        return args;
     }
+
+
+
 }
